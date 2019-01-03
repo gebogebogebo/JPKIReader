@@ -59,6 +59,7 @@
     <Compile Include="SCard\SCardAPI.cs" />
     <Compile Include="SCard\SCardIORequest.cs" />
     <Compile Include="SCard\SCardResult.cs" />
+    <Compile Include="Verify.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="NLog.config">

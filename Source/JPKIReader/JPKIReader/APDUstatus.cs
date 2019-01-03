@@ -2,7 +2,7 @@
 
 namespace JPKIReaderLib
 {
-    public class APDUstatus
+    internal class APDUstatus
     {
         public static bool IsSuccess(byte sw1,byte sw2)
         {

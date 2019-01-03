@@ -21,68 +21,18 @@ namespace JPKIReaderLib
         // Byte配列 => 16進数文字列
         public static string BytesToHexString(byte[] bs)
         {
+            if( bs == null) {
+                return ("");
+            }
+
             var str = BitConverter.ToString(bs);
             // "-"がいらないなら消しておく
             str = str.Replace("-", string.Empty);
             return str;
         }
 
-        public static int ToInt32(byte[] value, int startIndex, bool changeEndian = false)
-        {
-            byte[] sub = GetSubArray(value, startIndex, 4);
-            if (changeEndian == true) {
-                sub = sub.Reverse().ToArray();
-            }
-            return BitConverter.ToInt32(sub, 0);
-        }
-
-        public static int ToInt16(byte[] value, int startIndex, bool changeEndian = false)
-        {
-            byte[] sub = GetSubArray(value, startIndex, 2);
-            if (changeEndian == true) {
-                sub = sub.Reverse().ToArray();
-            }
-            return BitConverter.ToInt16(sub, 0);
-        }
-
-        // バイト配列から一部分を抜き出す
-        private static byte[] GetSubArray(byte[] src, int startIndex, int count)
-        {
-            byte[] dst = new byte[count];
-            Array.Copy(src, startIndex, dst, 0, count);
-            return dst;
-        }
-
-        // ビットON/OFFをGET
-        public static bool GetBit(byte bdata,int bit)
-        {
-            byte mask = 0x00;
-            if( bit == 0) {
-                mask = 0x01;
-            } else if( bit == 1) {
-                mask = 0x02;
-            } else if (bit == 2) {
-                mask = 0x04;
-            } else if (bit == 3) {
-                mask = 0x08;
-            } else if (bit == 4) {
-                mask = 0x10;
-            } else if (bit == 5) {
-                mask = 0x20;
-            } else if (bit == 6) {
-                mask = 0x40;
-            } else if (bit == 7) {
-                mask = 0x80;
-            }
-            if ((bdata & mask) == mask) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-
         // DERをPEMに変換する(CERTIFICATE)
-        public static string ConvertCertificateDERtoPEM(byte[] certificateDER)
+        public static string ConvertCertificateDERtoPEM(byte[] der)
         {
             // DER形式の証明書をPEM形式に変換する
             //     DER -> 鍵や証明書をASN.1というデータ構造で表し、それをシリアライズしたバイナリファイル
@@ -91,21 +41,40 @@ namespace JPKIReaderLib
             // 2.64文字ごとに改行コードをいれる
             // 3.ヘッダとフッタを入れる
 
-            var b64cert = Convert.ToBase64String(certificateDER);
+            var b64 = Convert.ToBase64String(der);
 
-            string pemdata = "";
-            int roopcount = (int)Math.Ceiling(b64cert.Length / 64.0f);
+            string pem = "";
+            int roopcount = (int)Math.Ceiling(b64.Length / 64.0f);
             for (int intIc = 0; intIc < roopcount; intIc++) {
                 int start = 64 * intIc;
                 if (intIc == roopcount - 1) {
-                    pemdata = pemdata + b64cert.Substring(start) + "\n";
+                    pem = pem + b64.Substring(start) + "\n";
                 } else {
-                    pemdata = pemdata + b64cert.Substring(start, 64) + "\n";
+                    pem = pem + b64.Substring(start, 64) + "\n";
                 }
             }
-            pemdata = string.Format("-----BEGIN CERTIFICATE-----\n") + pemdata + string.Format("-----END CERTIFICATE-----\n");
+            pem = string.Format("-----BEGIN CERTIFICATE-----\n") + pem + string.Format("-----END CERTIFICATE-----\n");
 
-            return pemdata;
+            return pem;
+        }
+
+        // DERをPEMに変換する(PUBLIC KEY)
+        public static string ConvertPublicKeyDERtoPEM(byte[] der)
+        {
+            var b64 = Convert.ToBase64String(der);
+
+            string pem = "";
+            int roopcount = (int)Math.Ceiling(b64.Length / 64.0f);
+            for (int intIc = 0; intIc < roopcount; intIc++) {
+                int start = 64 * intIc;
+                if (intIc == roopcount - 1) {
+                    pem = pem + b64.Substring(start) + "\n";
+                } else {
+                    pem = pem + b64.Substring(start, 64) + "\n";
+                }
+            }
+            pem = string.Format("-----BEGIN PUBLIC KEY-----\n") + pem + string.Format("-----END PUBLIC KEY-----\n");
+            return pem;
         }
 
         // バイナリデータをHEX文字列に変換、スペースと改行で適当に加工してファイルに出力する

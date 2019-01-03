@@ -5,16 +5,55 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:testUI01"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="928.665">
+        Title="JPKI Reader" Height="525.493" Width="928.665" WindowStartupLocation="CenterScreen">
     <Grid>
-        <TextBox x:Name="textBox" Margin="309,54,10,9.667" TextWrapping="Wrap" Text="" />
-        <Button x:Name="button1" Content="Get UID" HorizontalAlignment="Left" Height="35" Margin="10,31,0,0" VerticalAlignment="Top" Width="145" Click="button1_Click"/>
-        <Button x:Name="button2" Content="Get Authentication Certificate" HorizontalAlignment="Left" Height="41" Margin="10,71,0,0" VerticalAlignment="Top" Width="294" Click="button2_Click"/>
-        <Button x:Name="button3" Content="Get Authentication CA" HorizontalAlignment="Left" Margin="10,117,0,0" VerticalAlignment="Top" Width="294" Height="47" Click="button3_Click"/>
-        <Button x:Name="button4" Content="Get Signature Certificate" HorizontalAlignment="Left" Margin="10,169,0,0" VerticalAlignment="Top" Width="294" Height="47" Click="button4_Click"/>
-        <Button x:Name="button5" Content="Get Signature CA" HorizontalAlignment="Left" Margin="10,221,0,0" VerticalAlignment="Top" Width="294" Height="47" Click="button5_Click"/>
-        <Button x:Name="button6" Content="Get Authentication PIN Retry Count" HorizontalAlignment="Left" Margin="10,274,0,0" VerticalAlignment="Top" Width="294" Height="47" Click="button6_Click"/>
-        <Button x:Name="button7" Content="Get Signature PIN Retry Count" HorizontalAlignment="Left" Margin="10,326,0,0" VerticalAlignment="Top" Width="294" Height="47" Click="button7_Click"/>
+        <Button x:Name="button1" Content="Get UID" HorizontalAlignment="Left" Height="40" Margin="216,80,0,0" VerticalAlignment="Top" Width="145" Click="button1_Click"/>
+        <Button x:Name="buttonCheckJPKI" Content="Check JPKI" HorizontalAlignment="Left" Height="40" Margin="377,80,0,0" VerticalAlignment="Top" Width="145" Click="buttonCheckJPKI_Click" />
+        <GroupBox Header="Authentication" HorizontalAlignment="Left" Height="330" Margin="10,125,0,0" VerticalAlignment="Top" Width="260">
+            <Grid>
+                <Button x:Name="button2" Content="Get Auth Certificate" HorizontalAlignment="Left" Height="40" Margin="20,10,0,0" VerticalAlignment="Top" Width="202" Click="button2_Click"/>
+                <Button x:Name="button3" Content="Get Auth CA" HorizontalAlignment="Left" Margin="20,122,0,0" VerticalAlignment="Top" Width="202" Height="40" Click="button3_Click"/>
+                <Button x:Name="button6" Content="Get Auth PIN Retry Count" HorizontalAlignment="Left" Margin="18,178,0,0" VerticalAlignment="Top" Width="204" Height="40" Click="button6_Click"/>
+                <Button x:Name="button8" Content="※Signature using Auth Private Key" HorizontalAlignment="Left" Height="40" Margin="20,232,0,0" VerticalAlignment="Top" Width="202" Click="button8_Click"/>
+                <TextBox x:Name="textBoxAuthPIN" HorizontalAlignment="Left" Height="21" Margin="105,282,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="93"/>
+                <Button x:Name="button9" Content="Get Auth Public Key" HorizontalAlignment="Left" Height="40" Margin="20,63,0,0" VerticalAlignment="Top" Width="202" Click="button9_Click" />
+                <Label x:Name="label" Content="※Auth PIN" HorizontalAlignment="Left" Margin="20,277,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.187,-1.355"/>
+
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="Signature" HorizontalAlignment="Left" Height="330" Margin="277,125,0,0" VerticalAlignment="Top" Width="260">
+            <Grid>
+                <Button x:Name="button4" Content="※Get Sig Certificate" HorizontalAlignment="Left" Margin="30,10,0,0" VerticalAlignment="Top" Width="196" Height="40" Click="button4_Click" />
+                <TextBox x:Name="textBoxSigPIN" HorizontalAlignment="Left" Height="21" Margin="82.522,275,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="93" />
+                <Button x:Name="button10" Content="※Get Sig Public Key" HorizontalAlignment="Left" Margin="30,63,0,0" VerticalAlignment="Top" Width="196" Height="40" Click="button10_Click" />
+                <Button x:Name="button5" Content="Get Sig CA" HorizontalAlignment="Left" Margin="30,118,0,0" VerticalAlignment="Top" Width="196" Height="40" Click="button5_Click" />
+                <Button x:Name="button7" Content="Get Sig PIN Retry Count" HorizontalAlignment="Left" Margin="30,174,0,0" VerticalAlignment="Top" Width="196" Height="40" Click="button7_Click" />
+                <Label x:Name="label1" Content="※Sig PIN" HorizontalAlignment="Left" Margin="15.522,272,0,0" VerticalAlignment="Top" />
+                <Button x:Name="button11" Content="※Signature using Sig Private Key" HorizontalAlignment="Left" Margin="30,227,0,0" VerticalAlignment="Top" Width="196" Height="40" Click="button11_Click" />
+
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="Verify" HorizontalAlignment="Left" Height="330" Margin="542,125,0,0" VerticalAlignment="Top" Width="370">
+            <Grid>
+                <Button x:Name="buttonVerify" Content="Verify" HorizontalAlignment="Left" Height="33" Margin="187,264,0,0" VerticalAlignment="Top" Width="161" Click="buttonVerify_Click"/>
+
+                <Label Content="Public Key File" HorizontalAlignment="Left" Margin="10,9,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.394,0.533"/>
+                <TextBox x:Name="textPubKey" HorizontalAlignment="Left" Height="37" Margin="10,35,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="338"/>
+                <Button x:Name="buttonPubKey" Content="select" HorizontalAlignment="Left" Margin="273,12,0,0" VerticalAlignment="Top" Width="75" Click="buttonPubKey_Click"/>
+
+                <Label Content="Target File" HorizontalAlignment="Left" Margin="10,84,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.394,0.533"/>
+                <TextBox x:Name="textTargetFile" HorizontalAlignment="Left" Height="42" Margin="10,110,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="338"/>
+                <Button x:Name="buttonTargetFile" Content="select" HorizontalAlignment="Left" Margin="273,85,0,0" VerticalAlignment="Top" Width="75" Click="buttonTargetFile_Click" />
+
+                <Label Content="Signature File" HorizontalAlignment="Left" Margin="10,174,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.394,0.533"/>
+                <TextBox x:Name="textSig" HorizontalAlignment="Left" Height="42" Margin="10,204,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="338"/>
+                <Button x:Name="buttonSig" Content="select" HorizontalAlignment="Left" Margin="273,177,0,0" VerticalAlignment="Top" Width="75" Click="buttonSig_Click" />
+
+            </Grid>
+        </GroupBox>
+        <Label Content="JPKI Reader" HorizontalAlignment="Left" Height="54" Margin="23,10,0,0" VerticalAlignment="Top" Width="247" FontSize="36" FontWeight="Bold"/>
+        <Label Content="WorkDir" HorizontalAlignment="Left" Margin="10,80,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="textBoxWorkDir" HorizontalAlignment="Left" Height="23" Margin="66,84,0,0" TextWrapping="Wrap" Text=".\work" VerticalAlignment="Top" Width="120"/>
 
     </Grid>
 </Window>

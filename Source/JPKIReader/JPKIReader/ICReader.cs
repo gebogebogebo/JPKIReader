@@ -52,7 +52,7 @@ namespace JPKIReaderLib
             }
         }
 
-        public bool Connect()
+        internal bool Connect()
         {
             bool ret = false;
             try {
@@ -75,7 +75,7 @@ namespace JPKIReaderLib
             return ret;
         }
 
-        public bool Disconnect()
+        internal bool Disconnect()
         {
             if (this.handle != IntPtr.Zero) {
                 var result = SCardAPI.SCardDisconnect(this.handle, SCardAPI.SCARD_LEAVE_CARD);
@@ -88,7 +88,7 @@ namespace JPKIReaderLib
             return false;
         }
 
-        public APDUresponse SendandResponse(byte[] apdu)
+        internal APDUresponse SendandResponse(byte[] apdu)
         {
             APDUresponse res = null;
             try {

@@ -2,7 +2,7 @@
 
 namespace JPKIReaderLib
 {
-    static public class ChangeEndian
+    static internal class ChangeEndian
     {
         public static char Reverse(char value) => (char)Reverse((ushort)value);
         public static short Reverse(short value) => (short)Reverse((ushort)value);

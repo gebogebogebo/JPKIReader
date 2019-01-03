@@ -2,7 +2,7 @@
 
 namespace JPKIReaderLib
 {
-    public class APDUresponse
+    internal class APDUresponse
     {
         public bool IsSuccess { get; private set; }
         public string Message { get; private set; }
