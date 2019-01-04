@@ -87,7 +87,7 @@ namespace testUI01
             if( der != null) {
 
                 // Export
-                System.IO.File.WriteAllBytes(workDir + @".\Authentication_Certificate.der", der);
+                System.IO.File.WriteAllBytes(workDir + @"\Authentication_Certificate.der", der);
 
                 JPKIReaderLib.Common.ExportHextoFile(workDir+@"\Authentication_Certificate.hex", der.ToArray());
 
@@ -145,10 +145,12 @@ namespace testUI01
             var der = JPKIReaderLib.JPKIReader.GetSignatureCertificate(textBoxSigPIN.Text);
             if (der != null) {
                 // Export
-                JPKIReaderLib.Common.ExportHextoFile(workDir + @"\Signature_Certificate_DER.hex", der.ToArray());
+                System.IO.File.WriteAllBytes(workDir + @"\Signature_Certificate.der", der);
+
+                JPKIReaderLib.Common.ExportHextoFile(workDir + @"\Signature_Certificate.hex", der.ToArray());
 
                 var pem = JPKIReaderLib.Common.ConvertCertificateDERtoPEM(der.ToArray());
-                System.IO.File.WriteAllText(workDir+@".\Signature_Certificate_PEM.pem", pem);
+                System.IO.File.WriteAllText(workDir+ @"\Signature_Certificate.pem", pem);
 
                 MessageBox.Show("Get Sig Certificate Success!");
             } else {

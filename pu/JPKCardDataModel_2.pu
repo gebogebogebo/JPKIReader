@@ -1,0 +1,24 @@
+@startuml
+title <size:18>JPKI</size>
+
+package マイナンバーカード {
+    component Root as Card
+    component 公的個人認証AP as JPKIAP
+
+    cloud  "利用者証明用電子証明書 に関するFILE"{
+        component [認証用証明書\n include **Public Key**] as 認証用証明書 <<00-0A>>
+        component 認証用PIN <<00-18>>
+        component [認証用鍵\n**Private Key**] as 認証用鍵 <<00-17>>
+    }
+}
+
+Card ..> JPKIAP
+JPKIAP ..> 認証用証明書
+JPKIAP ..> 認証用鍵
+JPKIAP ..> 認証用PIN
+
+note bottom of 認証用証明書 : １．認証用証明書の取得\n２．認証用証明書から公開鍵を取り出す
+note bottom of 認証用PIN : ３．署名（３）
+note bottom of 認証用鍵 : ３．署名（５）
+
+@enduml

@@ -1,0 +1,21 @@
+@startuml
+start
+:SCardEstablishContext;
+
+:SCardListReadersW;
+if (Card Reader is Ready) then (yes)
+
+    :SCardConnectW;
+    if (Get Handle) then (Success)
+        while (for each APDU)
+            :SCardTransmit;
+        endwhile
+        :SCardDisconnect;
+    else (Failed)
+    endif
+else (no)    
+endif
+
+:SCardReleaseContext;
+end
+@enduml
