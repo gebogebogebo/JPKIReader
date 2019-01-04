@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace JPKIReaderLib
 {
-    public class JPKIReader : ICReader
+    public partial class JPKIReader : ICReader
     {
         private static readonly byte[] APDU_SELECT_AP = { 0x00, 0xA4, 0x04, 0x0C, 0x0A, 0xD3, 0x92, 0xF0, 0x00, 0x26, 0x01, 0x00, 0x00, 0x00, 0x01 };
 
@@ -58,7 +58,7 @@ namespace JPKIReaderLib
             }
 
             // get block num
-            int blocksize = 256;            // PEND あとで修正
+            int blocksize = 256;            // 決めうち！
             int blocknum = (int)Math.Ceiling(datasize / (double)blocksize);
             {
                 var apdu = new byte[] { 0x00, 0xB0, 0x00, 0x00, 0x00 };
@@ -314,69 +314,6 @@ namespace JPKIReaderLib
             return (signature);
         }
 
-        private static byte[] createDigestInfo(byte[] sigBaseSHA1)
-        {
-            // [ RFC 3447.PKCS #1.RSASSA-PKCS1-v1_5 ]
-
-            // ASN.1 DigestInfo
-            //DigestInfo::= SEQUENCE {
-            //  SEQUENCE {
-            //    OBJECT IDENTIFIER / SHA1(1,3,14,3,2,26)
-            //    NULL
-            //  }
-            //  OCTET STRING digest
-            //}
-
-            // SEQUENCE
-            var sequence = new List<byte>();
-            // 01    : TAG             = SEQUENCE= 0x30             
-            // 02    : Length of Value = length(OBJECT IDENTIFIER+NULL)             
-            // 03-   : Value           = OBJECT IDENTIFIER+NULL
-            {
-                // <OBJECT IDENTIFIER>
-                // 01    : TAG             = OID(OBJECT IDENTIFIER) = 0x06             
-                // 02    : Length of Value = 5byte = 0x05             
-                // 03-07 : Value           = 1,3,14,3,2,26 -> SHA1 = 0x2b 0e 03 02 1a 
-                // http://www.geocities.co.jp/SiliconValley-SanJose/3377/asn1Body.html
-                byte[] oid = new byte[] { 0x06, 0x05, 0x2b, 0x0e, 0x03, 0x02, 0x1a };
-
-                // <NULL>
-                // 01    : TAG             = NULL     = 0x05             
-                // 02    : Length of Value = no Value = 0x00
-                byte[] nl = new byte[] { 0x05, 0x00 };
-
-                sequence.Add(0x30);
-                sequence.Add((byte)(oid.Length + nl.Length));
-                sequence.AddRange(oid.ToArray());
-                sequence.AddRange(nl.ToArray());
-            }
-
-            // <OCTET STRING>
-            // 01    : TAG             = OCTET STRING   = 0x04             
-            // 02    : Length of Value = length(digest)
-            // 03-   : Value           = digest
-            var digest = new List<byte>();
-            {
-                digest.Add(0x04);
-                digest.Add((byte)sigBaseSHA1.Length);
-                digest.AddRange(sigBaseSHA1.ToArray());
-            }
-
-            // <DigestInfo>
-            // 01    : TAG             = SEQUENCE= 0x30
-            // 02    : Length of Value = length(SEQUENCE+digest)           
-            // 03-   : Value           = SEQUENCE+digest
-            var digestInfo = new List<byte>();
-            {
-                digestInfo.Add(0x30);
-                digestInfo.Add((byte)(sequence.Count + digest.Count));
-                digestInfo.AddRange(sequence);
-                digestInfo.AddRange(digest);
-            }
-
-            return digestInfo.ToArray();
-        }
-
         private static byte[] sigUsingPrivateKey(string pin, string targetFile, byte[] apduSelectPIN,byte[] apduSelectKey)
         {
             byte[] digestSHA1 = null;
@@ -500,7 +437,7 @@ namespace JPKIReaderLib
                     var x509 = new System.Security.Cryptography.X509Certificates.X509Certificate2(certDER);
 
                     // ここで取れるデータはPKCS#1形式の公開鍵
-                    // 先頭にpubkey_pkcs8
+                    // 先頭に
                     // 30820122300d06092a864886f70d01010105000382010f00
                     // を付加するとOpenSSLで取り扱い可能なPKCS#8になる
                     // https://qiita.com/hotpepsi/items/128f3a660cee8b5467c6

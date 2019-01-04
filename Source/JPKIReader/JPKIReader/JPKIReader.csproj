@@ -55,6 +55,7 @@
     <Compile Include="JPKIReader.cs" />
     <Compile Include="Common.cs" />
     <Compile Include="ICReader.cs" />
+    <Compile Include="JPKIReader_private.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SCard\SCardAPI.cs" />
     <Compile Include="SCard\SCardIORequest.cs" />

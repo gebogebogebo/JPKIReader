@@ -87,10 +87,12 @@ namespace testUI01
             if( der != null) {
 
                 // Export
-                JPKIReaderLib.Common.ExportHextoFile(workDir+@"\Authentication_Certificate_DER.hex", der.ToArray());
+                System.IO.File.WriteAllBytes(workDir + @".\Authentication_Certificate.der", der);
+
+                JPKIReaderLib.Common.ExportHextoFile(workDir+@"\Authentication_Certificate.hex", der.ToArray());
 
                 var pem = JPKIReaderLib.Common.ConvertCertificateDERtoPEM(der.ToArray());
-                System.IO.File.WriteAllText(workDir+@"\Authentication_Certificate_PEM.pem", pem);
+                System.IO.File.WriteAllText(workDir+@"\Authentication_Certificate.pem", pem);
 
                 MessageBox.Show("Get Authentication Certificate Success!");
             } else {
