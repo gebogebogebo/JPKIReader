@@ -1,43 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace testUI01
 {
-    /// <summary>
-    /// MainWindow.xaml の相互作用ロジック
-    /// </summary>
     public partial class MainWindow : Window
     {
         public MainWindow()
         {
             InitializeComponent();
         }
-
-        private string getWorkDir()
-        {
-            string path = textBoxWorkDir.Text;
-            if (string.IsNullOrEmpty(path)) {
-                return (".");
-            }
-
-            if (System.IO.Directory.Exists(path) == false) {
-                System.IO.Directory.CreateDirectory(path);
-            }
-            return path;
-        }
-
+ 
         // Get UID
         private void button1_Click(object sender, RoutedEventArgs e)
         {
@@ -122,6 +96,10 @@ namespace testUI01
         // Get Sig Public Key
         private void button10_Click(object sender, RoutedEventArgs e)
         {
+            if (checkSigPIN() == false) {
+                return;
+            }
+
             var workDir = getWorkDir();
 
             var der = JPKIReaderLib.JPKIReader.GetSignaturePublicKey(textBoxSigPIN.Text);
@@ -140,6 +118,10 @@ namespace testUI01
         // Get Sig Certificate
         private void button4_Click(object sender, RoutedEventArgs e)
         {
+            if (checkSigPIN() == false) {
+                return;
+            }
+
             var workDir = getWorkDir();
 
             var der = JPKIReaderLib.JPKIReader.GetSignatureCertificate(textBoxSigPIN.Text);
@@ -192,6 +174,20 @@ namespace testUI01
         // Signature using Auth Private Key
         private void button8_Click(object sender, RoutedEventArgs e)
         {
+            if(textBoxAuthPIN.Text.Length <= 0) {
+                MessageBox.Show("Auth PIN を入力してください");
+                return;
+            } else {
+                var count = JPKIReaderLib.JPKIReader.GetAuthenticationPINRetryCount();
+                if( count < 0) {
+                    MessageBox.Show("Error");
+                }
+
+                if (MessageBox.Show(string.Format($"PIN={textBoxAuthPIN.Text}\r\n\r\nAuthentication PIN Retry は {count} です。\r\n続けますか？"), "", MessageBoxButton.YesNo) != MessageBoxResult.Yes) {
+                    return;
+                }
+            }
+
             var workDir = getWorkDir();
 
             string file = "";
@@ -221,6 +217,10 @@ namespace testUI01
         // Signature using Sig Private Key
         private void button11_Click(object sender, RoutedEventArgs e)
         {
+            if (checkSigPIN() == false) {
+                return;
+            }
+
             var workDir = getWorkDir();
 
             string file = "";
@@ -246,7 +246,7 @@ namespace testUI01
             }
         }
 
-        // verify
+        // Verify
         private void buttonVerify_Click(object sender, RoutedEventArgs e)
         {
             try {
@@ -266,6 +266,7 @@ namespace testUI01
             }
         }
 
+        // Verify-select public key
         private void buttonPubKey_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new Microsoft.Win32.OpenFileDialog();
@@ -274,6 +275,7 @@ namespace testUI01
             }
         }
 
+        // Verify-select sig
         private void buttonSig_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new Microsoft.Win32.OpenFileDialog();
@@ -282,12 +284,44 @@ namespace testUI01
             }
         }
 
+        // Verify-select target file
         private void buttonTargetFile_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new Microsoft.Win32.OpenFileDialog();
             if (dialog.ShowDialog() == true) {
                 textTargetFile.Text = dialog.FileName;
             }
+        }
+
+        private string getWorkDir()
+        {
+            string path = textBoxWorkDir.Text;
+            if (string.IsNullOrEmpty(path)) {
+                return (".");
+            }
+
+            if (System.IO.Directory.Exists(path) == false) {
+                System.IO.Directory.CreateDirectory(path);
+            }
+            return path;
+        }
+
+        private bool checkSigPIN()
+        {
+            if (textBoxSigPIN.Text.Length <= 0) {
+                MessageBox.Show("Sig PIN を入力してください");
+                return false;
+            } else {
+                var count = JPKIReaderLib.JPKIReader.GetSignaturePINRetryCount();
+                if (count < 0) {
+                    MessageBox.Show("Error");
+                }
+
+                if (MessageBox.Show(string.Format($"PIN={textBoxSigPIN.Text}\r\n\r\nSig PIN Retry は {count} です。\r\n続けますか？"), "", MessageBoxButton.YesNo) != MessageBoxResult.Yes) {
+                    return false;
+                }
+            }
+            return true;
         }
 
     }

@@ -1,0 +1,11 @@
+@startuml
+title <size:18>Module</size>
+
+component testUI01.exe as userApl <<C#>>
+component JPKIReader.dll as JPKIReader <<C#>>
+component NLog.dll as NLog <<NuGet>>
+
+userApl ..> JPKIReader
+JPKIReader ..> NLog
+
+@enduml
