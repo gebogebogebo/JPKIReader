@@ -59,7 +59,6 @@ namespace testUI01
 
             var der = JPKIReaderLib.JPKIReader.GetAuthenticationCertificate();
             if( der != null) {
-
                 // Export
                 System.IO.File.WriteAllBytes(workDir + @"\Authentication_Certificate.der", der);
 
@@ -67,6 +66,17 @@ namespace testUI01
 
                 var pem = JPKIReaderLib.Common.ConvertCertificateDERtoPEM(der.ToArray());
                 System.IO.File.WriteAllText(workDir+@"\Authentication_Certificate.pem", pem);
+
+                {
+                    string file = workDir + @"\Authentication_Certificate.txt";
+
+                    var parseCert = JPKIReaderLib.JPKIReader.ParseCert(der);
+                    System.IO.File.WriteAllText(file, $"Authentication_Certificate{Environment.NewLine}");
+                    foreach ( var rec in parseCert) {
+                        string line = $"{rec.Key} : {rec.Value}{Environment.NewLine}";
+                        System.IO.File.AppendAllText(file, line);
+                    }
+                }
 
                 MessageBox.Show("Get Authentication Certificate Success!");
             } else {
@@ -82,10 +92,23 @@ namespace testUI01
             var der = JPKIReaderLib.JPKIReader.GetAuthenticationCA();
             if (der != null) {
                 // Export
-                JPKIReaderLib.Common.ExportHextoFile(workDir+@"\Authentication_CA_DER.hex", der.ToArray());
+                System.IO.File.WriteAllBytes(workDir + @"\Authentication_CA.der", der);
+
+                JPKIReaderLib.Common.ExportHextoFile(workDir+@"\Authentication_CA.hex", der.ToArray());
 
                 var pem = JPKIReaderLib.Common.ConvertCertificateDERtoPEM(der.ToArray());
                 System.IO.File.WriteAllText(workDir+@"\Authentication_CA_PEM.pem", pem);
+
+                {
+                    string file = workDir + @"\Authentication_CA.txt";
+
+                    var parseCert = JPKIReaderLib.JPKIReader.ParseCert(der);
+                    System.IO.File.WriteAllText(file, $"Authentication_CA{Environment.NewLine}");
+                    foreach (var rec in parseCert) {
+                        string line = $"{rec.Key} : {rec.Value}{Environment.NewLine}";
+                        System.IO.File.AppendAllText(file, line);
+                    }
+                }
 
                 MessageBox.Show("Get Authentication CA Success!");
             } else {

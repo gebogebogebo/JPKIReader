@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 namespace JPKIReaderLib
 {
@@ -75,7 +76,7 @@ namespace JPKIReaderLib
             certDER = certDER.Take(datasize).ToList();
 
             // log
-            logCert(certDER.ToArray());
+            //ParseCert(certDER.ToArray());
 
             return (certDER.ToArray());
         }
@@ -191,46 +192,49 @@ namespace JPKIReaderLib
             return (retrycount);
         }
 
-        private static void logCert(byte[] certDER)
+        public static Dictionary<string,string> ParseCert(byte[] certDER)
         {
-            logger.Debug("X.509-Parse-log");
+            var ret = new Dictionary<string, string>();
             try {
                 var x509 = new System.Security.Cryptography.X509Certificates.X509Certificate2(certDER);
                 //logger.Debug("X.509v3証明書の発行先であるプリンシパルの名前（古い形式）");
                 //logger.Debug(x509.GetName());
 
-                logger.Debug("X.509v3証明書を発行した証明機関の名前");
-                logger.Debug(x509.Issuer);
+                ret.Add("X.509v3証明書の形式の名前", x509.GetFormat());
+                ret.Add("バージョン", $"{x509.Version}");
+                ret.Add("シリアル番号", x509.GetSerialNumberString());
+                ret.Add("署名アルゴリズム", x509.SignatureAlgorithm.FriendlyName);
+                ret.Add("証明書を発行した証明機関の名前", x509.Issuer);
+                ret.Add("サブジェクトの識別名", x509.Subject);
+                ret.Add("証明書のハッシュ値の16進文字列", x509.GetCertHashString());
+                ret.Add("証明書の発効日", x509.GetEffectiveDateString());
+                ret.Add("証明書の失効日", x509.GetExpirationDateString());
+                ret.Add("キーアルゴリズム情報", x509.GetKeyAlgorithm());
+                ret.Add("キーアルゴリズムパラメータ", x509.GetKeyAlgorithmParametersString());
+                ret.Add("公開鍵", x509.GetPublicKeyString());
 
-                logger.Debug("X.509v3証明書のサブジェクトの識別名");
-                logger.Debug(x509.Subject);
+                foreach( var extension in x509.Extensions) {
+                    /*
+                    if (extension.Oid.FriendlyName == "キー使用法") {
+                        var ext = (X509KeyUsageExtension)extension;
+                        ret.Add("Extension キー使用法", ext.KeyUsages.ToString());
+                    }
+                    if (extension.Oid.FriendlyName == "拡張キー使用法") {
+                        var ext = (X509EnhancedKeyUsageExtension)extension;
+                        string value = "";
+                        var oids = ext.EnhancedKeyUsages;
+                        foreach (var oid in oids) {
+                            value = value + oid.FriendlyName + "(" + oid.Value + ")";
+                        }
+                        ret.Add("Extension 拡張キー使用法", value);
+                    }
+                    */
 
-                logger.Debug("X.509v3証明書のハッシュ値の16進文字列");
-                logger.Debug(x509.GetCertHashString());
-
-                logger.Debug("X.509v3証明書の発効日");
-                logger.Debug(x509.GetEffectiveDateString());
-
-                logger.Debug("X.509v3証明書の失効日");
-                logger.Debug(x509.GetExpirationDateString());
+                    ret.Add($"- Extension {extension.Oid.FriendlyName}", extension.Oid.Value);
+                }
 
                 //logger.Debug("X.509v3証明書を発行した証明機関の名前(古い形式)");
                 //logger.Debug(x509.GetIssuerName());
-
-                logger.Debug("X.509v3証明書のキーアルゴリズム情報");
-                logger.Debug(x509.GetKeyAlgorithm());
-
-                logger.Debug("X.509v3証明書のキーアルゴリズムパラメータ");
-                logger.Debug(x509.GetKeyAlgorithmParametersString());
-
-                logger.Debug("X.509v3証明書の公開鍵");
-                logger.Debug(x509.GetPublicKeyString());
-
-                logger.Debug("X.509v3証明書のシリアル番号");
-                logger.Debug(x509.GetSerialNumberString());
-
-                logger.Debug("X.509v3証明書の形式の名前");
-                logger.Debug(x509.GetFormat());
 
                 //logger.Debug("X.509証明書全体の生データ");
                 //logger.Debug(x509.GetRawCertDataString());
@@ -238,6 +242,7 @@ namespace JPKIReaderLib
             } catch (Exception ex) {
                 logger.Debug(ex);
             }
+            return ret;
         }
 
         private static byte[] signature(string pin, byte[] digestSHA1, byte[] apduSelectPIN,byte[] apduSelectKey)
